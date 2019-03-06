@@ -58,11 +58,7 @@ void setup() {
 
     // Doesn't actually guarantee a solved maze - need to adjust to left/right hand rule
 void loop() {
-  // TurnOnWheels();
   GoStraight();
-//  straightDistance = (straightDistance*0.8) + (0.2*GetDistance(STRAIGHT));
-//  rightDistance = (rightDistance*0.8) + (0.2*GetDistance(RIGHT));
-//  leftDistance = (leftDistance*0.8) + (0.2*GetDistance(LEFT));
     straightDistance = GetDistance(STRAIGHT);
     rightDistance = GetDistance(RIGHT);
     leftDistance = GetDistance(LEFT);
@@ -83,12 +79,6 @@ void loop() {
     
 }
 
-    // Incomplete. Can we do this with our motors? Seconds * velocity?
-void inchesToTravel(int x) {
-  
-  return;
-}
-
 void GoStraight() {
   digitalWrite(in1, LOW); 
   digitalWrite(in2, HIGH); 
@@ -104,10 +94,6 @@ void GoStraight() {
   delay(14);
   }
   
-  // digitalWrite(directionPinRight,HIGH);
-  // digitalWrite(directionPinLeft,LOW);
-  // analogWrite(pwmPin,127);
-  // analogWrite(pwmPin2,127);
   return;
 }
 
@@ -120,10 +106,7 @@ void RightTurn90() {
   analogWrite(enb, 0);
   
   delay(TURN_TIME);
-  
-  // digitalWrite(directionPinRight,LOW);
-  // digitalWrite(directionPinLeft,LOW);
-  // delay(TURN_TIME);
+
   return;
 }
 
@@ -134,28 +117,12 @@ void LeftTurn90() {
   digitalWrite(in3, HIGH); 
   digitalWrite(in4, LOW); 
   analogWrite(enb, 205); 
-  
-  // digitalWrite(directionPinRight,HIGH);
-  // digitalWrite(directionPinLeft,HIGH);
+
   delay(TURN_TIME);
+    
   return;
 }
 
-// void TurnOnWheels () {
-//       digitalWrite(sleepPin,HIGH);
-//       digitalWrite(sleepPin2,HIGH);
-//       analogWrite(pwmPin,205);
-//       analogWrite(pwmPin2,205);
-//       return;
-// }
-
-// void TurnOffWheels () {
-//       digitalWrite(sleepPin,LOW);
-//       digitalWrite(sleepPin2,LOW);
-//       analogWrite(pwmPin,0);
-//       analogWrite(pwmPin2,0);
-//       return;
-// }
 
 double GetDistance(int directions) {
   double duration, distance;
