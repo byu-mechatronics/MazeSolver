@@ -79,7 +79,7 @@ void GoStraight() {
     delay(5);
     analogWrite(enb, 0);
     analogWrite(ena, 0);
-    delay(14);
+    delay(10);
   }
 
   return;
