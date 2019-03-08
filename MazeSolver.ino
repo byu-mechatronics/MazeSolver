@@ -1,14 +1,15 @@
 // MazeSolver
 
-    //Initialize Pins
-    
+  //Initialize Pins
+    // H-Bridge Pins
 int ena = 2;
 int in4 = 3;
 int in3 = 4;
 int in1 = 5;
-int in2 = 6; 
+int in2 = 6;
 int enb = 7;
 
+    // RangeFinder Pins
 int echoF = 8;
 int triggerF = 9;
 int echoR = 10;
@@ -16,158 +17,146 @@ int triggerR = 11;
 int echoL = 12;
 int triggerL = 13;
 
-int directionPinRight = in3; 
-int directionPinLeft = in1;
-int pwmPin = ena;           
-int pwmPin2 = enb;
-int sleepPin = in4;
-int sleepPin2 = in2;
-int echo1 = echoF;
-int trigger1 = triggerF;
-int echo2 = echoR;
-int trigger2 = triggerR;
-int echo3 = echoL;
-int trigger3 = triggerL;
+// Constants
+#define LEFT 3
+#define RIGHT 2
+#define STRAIGHT 1
+#define OBSTACLE_CLOSE 10  // Determines how close to a wall the robot must get before turning. May be adjusted
+#define TURN_TIME 750     // How long to turn 90 degrees. Will need to be calibrated for each team
 
-    // Constants
-// double wheelRadius = 2.6;
-int LEFT = 3;
-int RIGHT = 2;
-int STRAIGHT = 1;
-int OBSTACLE_CLOSE = 10;
-int TURN_TIME = 1000; // Make relative to PWM 
-
-    // Initialize variables    
+// Initialize variables
 float straightDistance = 0, rightDistance = 0, leftDistance = 0;
 
 void setup() {
-  pinMode(2,OUTPUT);
-  pinMode(3,OUTPUT);
-  pinMode(4,OUTPUT);
-  pinMode(5,OUTPUT);
-  pinMode(6,OUTPUT);
-  pinMode(7,OUTPUT);
-  pinMode(trigger1, OUTPUT);
-  pinMode(echoF,INPUT);
-  pinMode(trigger2, OUTPUT);
-  pinMode(echo2,INPUT);
-  pinMode(trigger3, OUTPUT);
-  pinMode(echo3,INPUT);
-  Serial.begin(9600);
+      // Sets the pins as input pins or output pins, according to role
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(triggerF, OUTPUT);
+  pinMode(echoF, INPUT);
+  pinMode(triggerR, OUTPUT);
+  pinMode(echoR, INPUT);
+  pinMode(triggerL, OUTPUT);
+  pinMode(echoL, INPUT);
+  Serial.begin(9600);        // Sets the baud rate
 }
 
-    // Doesn't actually guarantee a solved maze - need to adjust to left/right hand rule
+// Will work, but doesn't actually guarantee a solved maze as it is right now
 void loop() {
   GoStraight();
-    straightDistance = GetDistance(STRAIGHT);
-    rightDistance = GetDistance(RIGHT);
-    leftDistance = GetDistance(LEFT);
-    
-    if (straightDistance < OBSTACLE_CLOSE) {
-      if (leftDistance < OBSTACLE_CLOSE && rightDistance < OBSTACLE_CLOSE) {
-        LeftTurn90();
-        LeftTurn90();
-      }
-      else if (leftDistance > rightDistance) {
-        LeftTurn90();
-      }
-      else if (rightDistance > leftDistance) {
-        RightTurn90();
-      }
+  straightDistance = GetDistance(STRAIGHT);
+  rightDistance = GetDistance(RIGHT);
+  leftDistance = GetDistance(LEFT);
+
+  if (straightDistance < OBSTACLE_CLOSE) {
+    if (leftDistance < OBSTACLE_CLOSE && rightDistance < OBSTACLE_CLOSE) {
+      LeftTurn90();
+      LeftTurn90();
     }
-    
-    
+    else if (leftDistance > rightDistance) {
+      LeftTurn90();
+    }
+    else if (rightDistance > leftDistance) {
+      RightTurn90();
+    }
+  }
 }
 
 void GoStraight() {
-  digitalWrite(in1, LOW); 
-  digitalWrite(in2, HIGH); 
-  digitalWrite(in3, HIGH); 
-  digitalWrite(in4, LOW); 
-  
-  for (int i = 0; i < 10; i++) {
-  analogWrite(enb, 225); 
-  analogWrite(ena, 205);
-  delay(5);
-  analogWrite(enb, 0);
-  analogWrite(ena, 0);
-  delay(14);
-  }
-  
-  return;
-}
+    // Sets all wheels to forward     -    these may need to be changed
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
 
-void RightTurn90() {
-  digitalWrite(in1, LOW); 
-  digitalWrite(in2, HIGH); 
-  analogWrite(ena, 205); 
-  digitalWrite(in3, LOW); 
-  digitalWrite(in4, HIGH); 
-  analogWrite(enb, 0);
-  
-  delay(TURN_TIME);
+    // PWM to slow down the maze solver 
+  for (int i = 0; i < 10; i++) {
+    analogWrite(enb, 225);
+    analogWrite(ena, 205);
+    delay(5);
+    analogWrite(enb, 0);
+    analogWrite(ena, 0);
+    delay(14);
+  }
 
   return;
 }
 
 void LeftTurn90() {
-  digitalWrite(in1, HIGH); 
-  digitalWrite(in2, LOW); 
-  analogWrite(ena, 0);
-  digitalWrite(in3, HIGH); 
-  digitalWrite(in4, LOW); 
-  analogWrite(enb, 205); 
+  
+    // Sets right wheel to forward
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  analogWrite(ena, 205);
+    // Left wheel is turned off
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  analogWrite(enb, 0);
+    // Continues for enough time to turn 90 degrees. TURN_TIME (top of file) will need to be adjusted 
+  delay(TURN_TIME);   
 
-  delay(TURN_TIME);
-    
   return;
 }
 
+void RightTurn90() {
+    // Sets left wheel to forward
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  analogWrite(ena, 0);
+    // Left wheel is turned off
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  analogWrite(enb, 205);
+    // Continues for enough time to turn 90 degrees. TURN_TIME (top of file) will need to be adjusted
+  delay(TURN_TIME);
+  return;
+}
 
 double GetDistance(int directions) {
   double duration, distance;
-  if (directions == STRAIGHT) {
-  digitalWrite(trigger1,LOW);
-  
-  delayMicroseconds(2);
-  digitalWrite(trigger1,HIGH);
-  
-  delayMicroseconds(10);
-  duration = pulseIn(echoF,HIGH);
-  distance = (duration/2)*0.0343;
- 
-  Serial.println("distance1 =  ");
- 
-  //Serial.println(distance);
-  }
-  else if (directions == RIGHT) {
-  digitalWrite(trigger2,LOW);
-  
-  delayMicroseconds(2);
-  digitalWrite(trigger2,HIGH);
-  
-  delayMicroseconds(10);
-  duration = pulseIn(echo2,HIGH);
-  distance = (duration/2)*0.0343;
- 
-  Serial.println("distance2 =  ");
- 
-  //Serial.println(distance);
-  }
 
-  else if (directions == LEFT) {
-  digitalWrite(trigger3,LOW);
-  
-  delayMicroseconds(3);
-  digitalWrite(trigger3,HIGH);
-  
-  delayMicroseconds(10);
-  duration = pulseIn(echo3,HIGH);
-  distance = (duration/2)*0.0343;
- 
-  Serial.println("distance3 =  ");
- 
-  //Serial.println(distance);
+  if (directions == STRAIGHT) {
+      // Sequence to activate the rangeFinders and read the data
+    digitalWrite(triggerF, LOW);
+
+    delayMicroseconds(2);
+    digitalWrite(triggerF, HIGH);
+
+    delayMicroseconds(10);
+    duration = pulseIn(echoF, HIGH);
+    distance = (duration / 2) * 0.0343; // Converts from m/s to cm/us
+
+    //Serial.println("distance1 =  ");
+    //Serial.println(distance);
+  } else if (directions == RIGHT) {
+      // Sequence to activate the rangeFinders and read the data
+    digitalWrite(triggerR, LOW);
+
+    delayMicroseconds(2);
+    digitalWrite(triggerR, HIGH);
+
+    delayMicroseconds(10);
+    duration = pulseIn(echoR, HIGH);
+    distance = (duration / 2) * 0.0343; // Converts from m/s to cm/us
+
+    //Serial.println("distance2 =  ");
+    //Serial.println(distance);
+  } else if (directions == LEFT) {
+      // Sequence to activate the rangeFinders and read the data
+    digitalWrite(triggerL, LOW);
+
+    delayMicroseconds(3);
+    digitalWrite(triggerL, HIGH);
+
+    delayMicroseconds(10);
+    duration = pulseIn(echoL, HIGH);
+    distance = (duration / 2) * 0.0343; // Converts from m/s to cm/us
+
+    // Serial.println("distance3 =  ");
+    //Serial.println(distance);
   }
   return distance;
 
