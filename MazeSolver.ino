@@ -2,12 +2,12 @@
 
   //Initialize Pins
     // H-Bridge Pins
-int ena = 2;
-int in4 = 3;
+int ena = 3;        // Changed - make sure to change the wiring
+int in4 = 2;        // Changed - make sure to change the wiring
 int in3 = 4;
 int in1 = 5;
-int in2 = 6;
-int enb = 7;
+int in2 = 7;        // Changed - make sure to change the wiring
+int enb = 6;        // Changed - make sure to change the wiring
 
     // RangeFinder Pins
 int echoF = 8;
@@ -79,7 +79,7 @@ void GoStraight() {
     delay(5);
     analogWrite(enb, 0);
     analogWrite(ena, 0);
-    delay(10);
+    delay(14);
   }
 
   return;
