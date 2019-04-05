@@ -73,14 +73,14 @@ void GoStraight() {
   digitalWrite(in4, LOW);
 
     // PWM to slow down the maze solver 
-  for (int i = 0; i < 10; i++) {
-    analogWrite(enb, 225);
-    analogWrite(ena, 205);
-    delay(5);
-    analogWrite(enb, 0);
-    analogWrite(ena, 0);
-    delay(14);
-  }
+//   for (int i = 0; i < 10; i++) {
+//     analogWrite(enb, 225);
+//     analogWrite(ena, 205);
+//     delay(5);
+//     analogWrite(enb, 0);
+//     analogWrite(ena, 0);
+//     delay(14);
+//   }
 
   return;
 }
